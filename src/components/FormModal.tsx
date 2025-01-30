@@ -34,9 +34,9 @@ const forms: {
   class: (type, data) => <ClassForm type={type} data={data} />,
   lesson: (type, data) => <LessonForm type={type} data={data} />,
   exam: (type, data) => <ExamForm type={type} data={data} />,
-  // assignment: (type, data) => <AssignmentForm type={type} data={data} />,
-  // result: (type, data) => <ResultForm type={type} data={data} />,
-  // event: (type, data) => <EventForm type={type} data={data} />,
+  assignment: (type, data) => <AssignmentForm type={type} data={data} />,
+  result: (type, data) => <ResultForm type={type} data={data} />,
+  event: (type, data) => <EventForm type={type} data={data} />,
   announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
 };
 

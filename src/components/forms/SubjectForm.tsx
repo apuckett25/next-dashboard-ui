@@ -35,7 +35,7 @@ const SubjectForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       {/* TITLE */}
-      <h1 className="text-xl text-semibold">Edit the parent</h1>
+      <h1 className="text-xl text-semibold">Edit the subject</h1>
       
       {/* AUTHENTICATION */}
       <div className="flex flex-wrap justify-between gap-4">
