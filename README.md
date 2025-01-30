@@ -24,3 +24,10 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Lama Dev Youtube Channel](https://youtube.com/lamadev) 
 - [Next.js](https://nextjs.org/learn)
+
+- [REACT CALENDAR](https://www.npmjs.com/package/react-calendar)
+- [REACT BIG CALENDAR](https://www.npmjs.com/package/react-big-calendar)
+- [RECHARTS](https://recharts.org/en-US)
+- [ZOD DOCUMENTATION](https://zod.dev/?id=basic-usage)
+- [REACT-HOOK-FORM](https://www.react-hook-form.com/get-started)
+- [REACT-HOOKFORM-RESOLVERS](https://www.npmjs.com/package/@hookform/resolvers)

@@ -1,6 +1,8 @@
 import Announcements from '@/components/Announcements'
 import BigCalendar from '@/components/BigCalendar'
+import FormModal from '@/components/FormModal'
 import PerformanceChart from '@/components/PerformanceChart'
+import { role } from '@/lib/data'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -17,20 +19,41 @@ const SingleStudentPage = () => {
                     {/* IMAGE */}
                     <div className="w-1/3">
                         <Image
-                         src='https://images.pexels.com/photos/5414817/pexels-photo-5414817.jpeg?auto=compress&cs=tinyrgb&w=1200'
-                         alt=''
-                         width={144}
-                         height={144}
-                         className='w-36 h-36 rounded-full object-cover'
+                            src="https://images.pexels.com/photos/5414817/pexels-photo-5414817.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                            alt=""
+                            width={144}
+                            height={144}
+                            className="w-36 h-36 rounded-full object-cover"
                         />
                     </div>
                     {/* END OF IMAGE */}
 
-                    {/* TEACHER INFO */}
+                    {/* STUDENT INFO */}
                     <div className="w-2/3 flex flex-col justify-between gap-4">
+                    <div className="flex items-center gap-4">
                         <h1 className='text-xl font-semibold'>Allie Summers</h1>
-                        <p className='text-sm text-gray-500'>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
+                        {role === "admin" && <FormModal
+                         table="student"
+                         type="update"
+                         data={{
+                            id: 1,
+                            username: "alliesummers",
+                            email: "alliesummers@gmail.com",
+                            password: "password",
+                            firstName: "Allie",
+                            lastName: "Summers",
+                            phone: "+1 234 567 89",
+                            address: "1234 Main St, Anytown, USA",
+                            bloodType: "A+",
+                            dateOfBirth: "2000-01-01",
+                            sex: "female",
+                            img: "https://images.pexels.com/photos/5414817/pexels-photo-5414817.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                         }}
+                        />}
                     </div>
+                    <p className='text-sm text-gray-500'>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit
+                    </p>
                     <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                         <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                             <Image src='/blood.png' alt='' width={14} height={14} />
@@ -48,6 +71,7 @@ const SingleStudentPage = () => {
                             <Image src='/phone.png' alt='' width={14} height={14} />
                             <span>+1 234 567</span>
                         </div>
+                    </div>
                     </div>
                     {/* END OF TEXT */}
                 </div>
