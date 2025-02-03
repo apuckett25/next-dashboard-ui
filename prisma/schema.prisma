@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model admins {
+  id    Int     @id(map: "PK_admins") @default(autoincrement())
+  name  String? @db.NChar(20)
+  email String? @db.NChar(50)
+}
+
+model assignments {
+  id       Int       @id(map: "PK_assignments") @default(autoincrement())
+  title    String?   @db.NChar(20)
+  lessonId Int
+  lessons  lessons   @relation(fields: [lessonId], references: [id], onUpdate: NoAction, map: "FK_assignments_lessons")
+  results  results[]
+}
+
+model attendance {
+  id        Int      @id(map: "PK_attendance") @default(autoincrement())
+  studentId Int
+  lessonId  Int
+  status    String?  @db.NChar(10)
+  lessons   lessons  @relation(fields: [lessonId], references: [id], onUpdate: NoAction, map: "FK_attendance_lessons")
+  students  students @relation(fields: [studentId], references: [id], onUpdate: NoAction, map: "FK_attendance_students")
+}
+
+model classes {
+  id            Int             @id(map: "PK_classes") @default(autoincrement())
+  name          String?         @db.NChar(20)
+  gradeId       Int?
+  supervisorId  Int?
+  capacity      Int?
+  announcements announcements[]
+  grades        grades?         @relation(fields: [gradeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_classes_grades")
+  teachers      teachers?       @relation(fields: [supervisorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_classes_teachers")
+  events        events[]
+  students      students[]
+}
+
+model exams {
+  id       Int       @id(map: "PK_exams") @default(autoincrement())
+  name     String?   @db.NChar(20)
+  lessonId Int
+  lessons  lessons   @relation(fields: [lessonId], references: [id], onUpdate: NoAction, map: "FK_exams_lessons")
+  results  results[]
+}
+
+model grades {
+  id       Int        @id(map: "PK_grades") @default(autoincrement())
+  level    String?    @db.NChar(50)
+  classes  classes[]
+  students students[]
+}
+
+model lessons {
+  id          Int           @id(map: "PK_lessons") @default(autoincrement())
+  name        String?       @db.NChar(20)
+  classId     Int
+  subjectId   Int
+  teacherId   Int
+  assignments assignments[]
+  attendance  attendance[]
+  exams       exams[]
+  subjects    subjects      @relation(fields: [subjectId], references: [id], onUpdate: NoAction, map: "FK_lessons_subjects")
+  teachers    teachers      @relation(fields: [teacherId], references: [id], onUpdate: NoAction, map: "FK_lessons_teachers")
+}
+
+model parents {
+  id       Int        @id(map: "PK_parents") @default(autoincrement())
+  name     String?    @db.NChar(20)
+  email    String?    @db.NChar(30)
+  students students[]
+}
+
+model results {
+  id           Int         @id(map: "PK_results") @default(autoincrement())
+  studentId    Int
+  examId       Int
+  assignmentId Int
+  score        Int?
+  assignments  assignments @relation(fields: [assignmentId], references: [id], onUpdate: NoAction, map: "FK_results_assignments")
+  exams        exams       @relation(fields: [examId], references: [id], onUpdate: NoAction, map: "FK_results_exams")
+  subjects     subjects    @relation(fields: [studentId], references: [id], onUpdate: NoAction, map: "FK_results_subjects")
+}
+
+model students {
+  id         Int          @id(map: "PK_students") @default(autoincrement())
+  name       String?      @db.NChar(20)
+  parentId   Int?
+  gradeId    Int?
+  classId    Int?
+  email      String?      @db.NVarChar(50)
+  img        Bytes?       @db.Image
+  phone      String?      @db.NVarChar(50)
+  address    String?      @db.NVarChar(50)
+  attendance attendance[]
+  classes    classes?     @relation(fields: [classId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_students_classes")
+  grades     grades?      @relation(fields: [gradeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_students_grades")
+  parents    parents?     @relation(fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_students_parents")
+}
+
+model subjects {
+  id        Int       @id(map: "PK_subjects") @default(autoincrement())
+  name      String?   @db.NChar(20)
+  teacherId Int?
+  lessons   lessons[]
+  results   results[]
+  teachers  teachers? @relation(fields: [teacherId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_subjects_teachers")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61A8E4FD03") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model teachers {
+  id       Int        @id(map: "PK_teachers") @default(autoincrement())
+  username String?    @db.NChar(20)
+  phone    String?    @db.NChar(10)
+  email    String?    @db.NChar(30)
+  photo    String?    @db.NChar(50)
+  name     String?    @db.NChar(20)
+  address  String?    @db.NChar(10)
+  classes  classes[]
+  lessons  lessons[]
+  subjects subjects[]
+}
+
+model announcements {
+  id               Int       @id(map: "PK_announcements") @default(autoincrement())
+  title            String?   @db.NChar(30)
+  announcementDesc String?   @db.NVarChar(Max)
+  classId          Int
+  date             DateTime? @db.Date
+  classes          classes   @relation(fields: [classId], references: [id], onUpdate: NoAction, map: "FK_announcements_classes")
+}
+
+model events {
+  id               Int       @id(map: "PK_events") @default(autoincrement())
+  title            String?   @db.NChar(30)
+  eventDescription String?   @db.NVarChar(Max)
+  startTime        DateTime? @db.DateTime
+  endTime          DateTime? @db.DateTime
+  classId          Int
+  classes          classes   @relation(fields: [classId], references: [id], onUpdate: NoAction, map: "FK_events_classes")
+}

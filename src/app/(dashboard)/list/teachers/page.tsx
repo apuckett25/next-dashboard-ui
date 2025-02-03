@@ -5,18 +5,11 @@ import FormModal from "@/components/FormModal";
 import { role, teachersData } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
+import { classes, subjects, teachers } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { ITEMS_PER_PAGE } from "@/lib/settings";
 
-type Teacher = {
-  id: number;
-  teacherId: string;
-  name: string;
-  email?: string;
-  photo: string;
-  phone: string;
-  subjects: string[];
-  classes: string[];
-  address: string;
-};
+type TeacherList = teachers & {subjects: subjects[]} & {classes: classes[]};
 
 const columns = [
   {
@@ -25,7 +18,7 @@ const columns = [
   },
   {
     header: "Teacher ID",
-    accessor: "teacherId",
+    accessor: "username",
     className: "hidden md:table-cell",
   },
   {
@@ -54,15 +47,41 @@ const columns = [
   },
 ];
 
-const TeacherListPage = () => {
-  const renderRow = (item: Teacher) => (
+
+const TeacherListPage = async ({
+  searchParams,
+}: {
+  searchParams: {[key: string]: string | undefined };
+}) => {
+  
+  const { page, ...queryParams } = searchParams;
+
+  const p = page ? parseInt(page) : 1;
+
+  const [data, count] = await prisma.$transaction([
+
+    
+    prisma.teachers.findMany({
+      include: {
+        subjects: true,
+        classes: true,
+      },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1)
+    }),
+    prisma.teachers.count(),
+  ])
+        
+  // console.log(data)
+  
+  const renderRow = (item: TeacherList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
         <Image
-          src={item.photo}
+          src={item.photo || '/noAvatar.png'}
           alt=""
           width={40}
           height={40}
@@ -73,9 +92,9 @@ const TeacherListPage = () => {
           <p className="text-xs text-gray-500">{item?.email}</p>
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.teacherId}</td>
-      <td className="hidden md:table-cell">{item.subjects.join(",")}</td>
-      <td className="hidden md:table-cell">{item.classes.join(",")}</td>
+      <td className="hidden md:table-cell">{item.username || '999'}</td>
+      <td className="hidden md:table-cell">{item.subjects.map(subject => subject.name).join(",")}</td>
+      <td className="hidden md:table-cell">{item.classes.map(classes => classes.name).join(",")}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
@@ -114,9 +133,9 @@ const TeacherListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={teachersData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination page={p} count={count}/>
     </div>
   );
 };
